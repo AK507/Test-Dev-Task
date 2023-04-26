@@ -1,0 +1,9 @@
+$(function(){
+  $.getJSON('https://cdn.shopify.com/s/files/1/0577/0290/8056/files/Deck_Matcher_Wood-with-Urls.json?v=1668103691', function(data) {
+    $.each( data, function( key, val ) {
+      //items.push( "<li id='" + key + "'>" + val + "</li>" );
+      console.log("key: "+ key + "-- val: " +  val['Wood Type']);
+      console.log("key: "+ key + "-- val: " +  val['Color Name']);
+    });
+  });
+});
