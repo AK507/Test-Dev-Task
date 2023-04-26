@@ -1,501 +1,593 @@
-<link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-cart-notification.css' | asset_url }}" media="print" onload="this.media='all'">
+<div class="bg-white">
+  <!--
+    Mobile menu
 
-<noscript>{{ 'component-list-menu.css' | asset_url | stylesheet_tag }}</noscript>
-<noscript>{{ 'component-search.css' | asset_url | stylesheet_tag }}</noscript>
-<noscript>{{ 'component-menu-drawer.css' | asset_url | stylesheet_tag }}</noscript>
-<noscript>{{ 'component-cart-notification.css' | asset_url | stylesheet_tag }}</noscript>
+    Off-canvas menu for mobile, show/hide based on off-canvas menu state.
+  -->
+  <div class="relative z-40 lg:hidden" role="dialog" aria-modal="true">
+    <!--
+      Off-canvas menu backdrop, show/hide based on off-canvas menu state.
 
-<style>
-  header-drawer {
-    justify-self: start;
-    margin-left: -1.2rem;
-  }
+      Entering: "transition-opacity ease-linear duration-300"
+        From: "opacity-0"
+        To: "opacity-100"
+      Leaving: "transition-opacity ease-linear duration-300"
+        From: "opacity-100"
+        To: "opacity-0"
+    -->
+    <div class="fixed inset-0 bg-black bg-opacity-25"></div>
 
-  @media screen and (min-width: 990px) {
-    header-drawer {
-      display: none;
-    }
-  }
+    <div class="fixed inset-0 z-40 flex">
+      <!--
+        Off-canvas menu, show/hide based on off-canvas menu state.
 
-  .menu-drawer-container {
-    display: flex;
-  }
+        Entering: "transition ease-in-out duration-300 transform"
+          From: "-translate-x-full"
+          To: "translate-x-0"
+        Leaving: "transition ease-in-out duration-300 transform"
+          From: "translate-x-0"
+          To: "-translate-x-full"
+      -->
+      <div class="relative flex w-full max-w-xs flex-col overflow-y-auto bg-white pb-12 shadow-xl">
+        <div class="flex px-4 pb-2 pt-5">
+          <button type="button" class="-m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400">
+            <span class="sr-only">Close menu</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
-  .list-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
+        <!-- Links -->
+        <div class="mt-2">
+          <div class="border-b border-gray-200">
+            <div class="-mb-px flex space-x-8 px-4" aria-orientation="horizontal" role="tablist">
+              <!-- Selected: "border-indigo-600 text-indigo-600", Not Selected: "border-transparent text-gray-900" -->
+              <button id="tabs-1-tab-1" class="border-transparent text-gray-900 flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-base font-medium" aria-controls="tabs-1-panel-1" role="tab" type="button">Women</button>
+              <!-- Selected: "border-indigo-600 text-indigo-600", Not Selected: "border-transparent text-gray-900" -->
+              <button id="tabs-1-tab-2" class="border-transparent text-gray-900 flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-base font-medium" aria-controls="tabs-1-panel-2" role="tab" type="button">Men</button>
+            </div>
+          </div>
 
-  .list-menu--inline {
-    display: inline-flex;
-    flex-wrap: wrap;
-  }
-
-  summary.list-menu__item {
-    padding-right: 2.7rem;
-  }
-
-  .list-menu__item {
-    display: flex;
-    align-items: center;
-    line-height: 1.3;
-  }
-
-  .list-menu__item--link {
-    text-decoration: none;
-    padding-bottom: 1rem;
-    padding-top: 1rem;
-    line-height: 1.8;
-  }
-
-  @media screen and (min-width: 750px) {
-    .list-menu__item--link {
-      padding-bottom: 0.5rem;
-      padding-top: 0.5rem;
-    }
-  }
-</style>
-
-<script src="{{ 'details-disclosure.js' | asset_url }}" defer="defer"></script>
-<script src="{{ 'details-modal.js' | asset_url }}" defer="defer"></script>
-
-<svg xmlns="http://www.w3.org/2000/svg" class="hidden">
-  <symbol id="icon-search" viewbox="0 0 18 19" fill="none">
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M11.03 11.68A5.784 5.784 0 112.85 3.5a5.784 5.784 0 018.18 8.18zm.26 1.12a6.78 6.78 0 11.72-.7l5.4 5.4a.5.5 0 11-.71.7l-5.41-5.4z" fill="currentColor"/>
-  </symbol>
-
-  <symbol id="icon-close" class="icon icon-close" fill="none" viewBox="0 0 18 17">
-    <path d="M.865 15.978a.5.5 0 00.707.707l7.433-7.431 7.579 7.282a.501.501 0 00.846-.37.5.5 0 00-.153-.351L9.712 8.546l7.417-7.416a.5.5 0 10-.707-.708L8.991 7.853 1.413.573a.5.5 0 10-.693.72l7.563 7.268-7.418 7.417z" fill="currentColor">
-  </symbol>
-</svg>
-<{% if section.settings.enable_sticky_header %}sticky-header{% else %}div{% endif %} class="header-wrapper{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}">
-  <header class="header header--{{ section.settings.logo_position }} page-width{% if section.settings.menu != blank %} header--has-menu{% endif %}">
-    {%- if section.settings.menu != blank -%}
-      <header-drawer>
-        <details class="menu-drawer-container">
-          <summary class="header__icon header__icon--menu header__icon--summary link link--text focus-inset" aria-label="{{ 'sections.header.menu' | t }}">
-            <span>
-              {% render 'icon-hamburger' %}
-              {% render 'icon-close' %}
-            </span>
-          </summary>
-          <div id="menu-drawer" class="menu-drawer motion-reduce" tabindex="-1">
-            <div class="menu-drawer__inner-container">
-              <div class="menu-drawer__navigation-container">
-                <nav class="menu-drawer__navigation">
-                  <ul class="menu-drawer__menu list-menu" role="list">
-                    {%- for link in section.settings.menu.links -%}
-                      <li>
-                        {%- if link.links != blank -%}
-                          <details>
-                            <summary class="menu-drawer__menu-item list-menu__item link link--text focus-inset{% if link.child_active %} menu-drawer__menu-item--active{% endif %}">
-                              {{ link.title | escape }}
-                              {% render 'icon-arrow' %}
-                              {% render 'icon-caret' %}
-                            </summary>
-                            <div id="link-{{ link.title | escape }}" class="menu-drawer__submenu motion-reduce" tabindex="-1">
-                              <div class="menu-drawer__inner-submenu">
-                                <button class="menu-drawer__close-button link link--text focus-inset" aria-expanded="true">
-                                  {% render 'icon-arrow' %}
-                                  {{ link.title | escape }}
-                                </button>
-                                <ul class="menu-drawer__menu list-menu" role="list" tabindex="-1">
-                                  {%- for childlink in link.links -%}
-                                    <li>
-                                      {%- if childlink.links == blank -%}
-                                        <a href="{{ childlink.url }}" class="menu-drawer__menu-item link link--text list-menu__item focus-inset{% if childlink.current %} menu-drawer__menu-item--active{% endif %}"{% if childlink.current %} aria-current="page"{% endif %}>
-                                          {{ childlink.title | escape }}
-                                        </a>
-                                      {%- else -%}
-                                        <details>
-                                          <summary class="menu-drawer__menu-item link link--text list-menu__item focus-inset">
-                                            {{ childlink.title | escape }}
-                                            {% render 'icon-arrow' %}
-                                            {% render 'icon-caret' %}
-                                          </summary>
-                                          <div id="childlink-{{ childlink.title | escape }}" class="menu-drawer__submenu motion-reduce">
-                                            <button class="menu-drawer__close-button link link--text focus-inset" aria-expanded="true">
-                                              {% render 'icon-arrow' %}
-                                              {{ childlink.title | escape }}
-                                            </button>
-                                            <ul class="menu-drawer__menu list-menu" role="list" tabindex="-1">
-                                              {%- for grandchildlink in childlink.links -%}
-                                                <li>
-                                                  <a href="{{ grandchildlink.url }}" class="menu-drawer__menu-item link link--text list-menu__item focus-inset{% if grandchildlink.current %} menu-drawer__menu-item--active{% endif %}"{% if grandchildlink.current %} aria-current="page"{% endif %}>
-                                                    {{ grandchildlink.title | escape }}
-                                                  </a>
-                                                </li>
-                                              {%- endfor -%}
-                                            </ul>
-                                          </div>
-                                        </details>
-                                      {%- endif -%}
-                                    </li>
-                                  {%- endfor -%}
-                                </ul>
-                              </div>
-                            </div>
-                          </details>
-                        {%- else -%}
-                          <a href="{{ link.url }}" class="menu-drawer__menu-item list-menu__item link link--text focus-inset{% if link.current %} menu-drawer__menu-item--active{% endif %}"{% if link.current %} aria-current="page"{% endif %}>
-                            {{ link.title | escape }}
-                          </a>
-                        {%- endif -%}
-                      </li>
-                    {%- endfor -%}
-                  </ul>
-                </nav>
-                <div class="menu-drawer__utility-links">
-                  {%- if shop.customer_accounts_enabled -%}
-                    <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="menu-drawer__account link link--text focus-inset h5">
-                      {% render 'icon-account' %}
-                      {%- liquid
-                        if customer
-                          echo 'customer.account_fallback' | t
-                        else
-                          echo 'customer.log_in' | t
-                        endif
-                      -%}
-                    </a>
-                  {%- endif -%}
-                  <ul class="list list-social list-unstyled" role="list">
-                    {%- if settings.social_twitter_link != blank -%}
-                      <li class="list-social__item">
-                        <a href="{{ settings.social_twitter_link }}" class="link link--text list-social__link" aria-describedby="a11y-external-message">
-                          {%- render 'icon-twitter' -%}
-                          <span class="visually-hidden">{{ 'general.social.links.twitter' | t }}</span>
-                        </a>
-                      </li>
-                    {%- endif -%}
-                    {%- if settings.social_facebook_link != blank -%}
-                      <li class="list-social__item">
-                        <a href="{{ settings.social_facebook_link }}" class="link link--text list-social__link" aria-describedby="a11y-external-message">
-                          {%- render 'icon-facebook' -%}
-                          <span class="visually-hidden">{{ 'general.social.links.facebook' | t }}</span>
-                        </a>
-                      </li>
-                    {%- endif -%}
-                    {%- if settings.social_pinterest_link != blank -%}
-                      <li class="list-social__item">
-                        <a href="{{ settings.social_pinterest_link }}" class="link link--text list-social__link" aria-describedby="a11y-external-message">
-                          {%- render 'icon-pinterest' -%}
-                          <span class="visually-hidden">{{ 'general.social.links.pinterest' | t }}</span>
-                        </a>
-                      </li>
-                    {%- endif -%}
-                    {%- if settings.social_instagram_link != blank -%}
-                      <li class="list-social__item">
-                        <a href="{{ settings.social_instagram_link }}" class="link link--text list-social__link" aria-describedby="a11y-external-message">
-                          {%- render 'icon-instagram' -%}
-                          <span class="visually-hidden">{{ 'general.social.links.instagram' | t }}</span>
-                        </a>
-                      </li>
-                    {%- endif -%}
-                    {%- if settings.social_tumblr_link != blank -%}
-                      <li class="list-social__item">
-                        <a href="{{ settings.social_tumblr_link }}" class="link link--text list-social__link" aria-describedby="a11y-external-message">
-                          {%- render 'icon-tumblr' -%}
-                          <span class="visually-hidden">{{ 'general.social.links.tumblr' | t }}</span>
-                        </a>
-                      </li>
-                    {%- endif -%}
-                    {%- if settings.social_snapchat_link != blank -%}
-                      <li class="list-social__item">
-                        <a href="{{ settings.social_snapchat_link }}" class="link link--text list-social__link" aria-describedby="a11y-external-message">
-                          {%- render 'icon-snapchat' -%}
-                          <span class="visually-hidden">{{ 'general.social.links.snapchat' | t }}</span>
-                        </a>
-                      </li>
-                    {%- endif -%}
-                    {%- if settings.social_youtube_link != blank -%}
-                      <li class="list-social__item">
-                        <a href="{{ settings.social_youtube_link }}" class="link link--text list-social__link" aria-describedby="a11y-external-message">
-                          {%- render 'icon-youtube' -%}
-                          <span class="visually-hidden">{{ 'general.social.links.youtube' | t }}</span>
-                        </a>
-                      </li>
-                    {%- endif -%}
-                    {%- if settings.social_vimeo_link != blank -%}
-                      <li class="list-social__item">
-                        <a href="{{ settings.social_vimeo_link }}" class="link link--text list-social__link" aria-describedby="a11y-external-message">
-                          {%- render 'icon-vimeo' -%}
-                          <span class="visually-hidden">{{ 'general.social.links.vimeo' | t }}</span>
-                        </a>
-                      </li>
-                    {%- endif -%}
-                  </ul>
+          <!-- 'Women' tab panel, show/hide based on tab state. -->
+          <div id="tabs-1-panel-1" class="space-y-10 px-4 pb-8 pt-10" aria-labelledby="tabs-1-tab-1" role="tabpanel" tabindex="0">
+            <div class="grid grid-cols-2 gap-x-4">
+              <div class="group relative text-sm">
+                <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
+                  <img src="https://tailwindui.com/img/ecommerce-images/mega-menu-category-01.jpg" alt="Models sitting back to back, wearing Basic Tee in black and bone." class="object-cover object-center">
                 </div>
+                <a href="#" class="mt-6 block font-medium text-gray-900">
+                  <span class="absolute inset-0 z-10" aria-hidden="true"></span>
+                  New Arrivals
+                </a>
+                <p aria-hidden="true" class="mt-1">Shop now</p>
+              </div>
+              <div class="group relative text-sm">
+                <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
+                  <img src="https://tailwindui.com/img/ecommerce-images/mega-menu-category-02.jpg" alt="Close up of Basic Tee fall bundle with off-white, ochre, olive, and black tees." class="object-cover object-center">
+                </div>
+                <a href="#" class="mt-6 block font-medium text-gray-900">
+                  <span class="absolute inset-0 z-10" aria-hidden="true"></span>
+                  Basic Tees
+                </a>
+                <p aria-hidden="true" class="mt-1">Shop now</p>
               </div>
             </div>
-          </div>
-        </details>
-      </header-drawer>
-    {%- endif -%}
-
-    {%- if section.settings.logo_position == 'top-center' or section.settings.menu == blank -%}
-      <details-modal class="header__search">
-        <details>
-          <summary class="header__icon header__icon--search header__icon--summary link link--text focus-inset modal__toggle" aria-haspopup="dialog" aria-label="{{ 'general.search.search' | t }}">
-            <span>
-              <svg class="modal__toggle-open icon icon-search" aria-hidden="true" focusable="false" role="presentation">
-                <use href="#icon-search">
-              </svg>
-              <svg class="modal__toggle-close icon icon-close" aria-hidden="true" focusable="false" role="presentation">
-                <use href="#icon-close">
-              </svg>
-            </span>
-          </summary>
-          <div class="search-modal modal__content" role="dialog" aria-modal="true" aria-label="{{ 'general.search.search' | t }}">
-            <div class="search-modal__content" tabindex="-1">
-              <form action="{{ routes.search_url }}" method="get" role="search" class="search search-modal__form">
-                <div class="field">
-                  <input class="search__input field__input" id="Search-In-Modal" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.search' | t }}">
-                  <label class="field__label" for="Search-In-Modal">{{ 'general.search.search' | t }}</label>
-                  <input type="hidden" name="options[prefix]" value="last">
-                  <button class="search__button field__button" aria-label="{{ 'general.search.search' | t }}">
-                    <svg class="icon icon-search" aria-hidden="true" focusable="false" role="presentation">
-                      <use href="#icon-search">
-                    </svg>
-                  </button>
-                </div>
-              </form>
-              <button type="button" class="modal__close-button link link--text focus-inset" aria-label="{{ 'accessibility.close' | t }}">
-                <svg class="icon icon-close" aria-hidden="true" focusable="false" role="presentation">
-                  <use href="#icon-close">
-                </svg>
-              </button>
+            <div>
+              <p id="women-clothing-heading-mobile" class="font-medium text-gray-900">Clothing</p>
+              <ul role="list" aria-labelledby="women-clothing-heading-mobile" class="mt-6 flex flex-col space-y-6">
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Tops</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Dresses</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Pants</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Denim</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Sweaters</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">T-Shirts</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Jackets</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Activewear</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Browse All</a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p id="women-accessories-heading-mobile" class="font-medium text-gray-900">Accessories</p>
+              <ul role="list" aria-labelledby="women-accessories-heading-mobile" class="mt-6 flex flex-col space-y-6">
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Watches</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Wallets</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Bags</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Sunglasses</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Hats</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Belts</a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p id="women-brands-heading-mobile" class="font-medium text-gray-900">Brands</p>
+              <ul role="list" aria-labelledby="women-brands-heading-mobile" class="mt-6 flex flex-col space-y-6">
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Full Nelson</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">My Way</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Re-Arranged</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Counterfeit</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Significant Other</a>
+                </li>
+              </ul>
             </div>
           </div>
-        </details>
-      </details-modal>
-    {%- endif -%}
-
-    {%- if request.page_type == 'index' -%}
-      <h1 class="header__heading">
-    {%- endif -%}
-        <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
-          {%- if section.settings.logo != blank -%}
-            {%- assign image_size = section.settings.logo_width | append: 'x' -%}
-            <img srcset="{{ section.settings.logo | img_url: image_size }} 1x, {{ section.settings.logo | img_url: image_size, scale: 2 }} 2x"
-              src="{{ section.settings.logo | img_url: image_size }}"
-              loading="lazy"
-              class="header__heading-logo"
-              alt="{{ section.settings.logo.alt | default: shop.name | escape }}">
-          {%- else -%}
-            <span class="h2">{{ shop.name }}</span>
-          {%- endif -%}
-        </a>
-    {%- if request.page_type == 'index' -%}
-      </h1>
-    {%- endif -%}
-
-    {%- if section.settings.menu != blank -%}
-      <nav class="header__inline-menu">
-        <ul class="list-menu list-menu--inline" role="list">
-          {%- for link in section.settings.menu.links -%}
-            <li>
-              {%- if link.links != blank -%}
-                <details-disclosure>
-                  <details>
-                    <summary class="header__menu-item list-menu__item link focus-inset">
-                      <span {%- if link.child_active %} class="header__active-menu-item"{% endif %}>{{ link.title | escape }}</span>
-                      {% render 'icon-caret' %}
-                    </summary>
-                    <ul class="header__submenu list-menu list-menu--disclosure caption-large motion-reduce" role="list" tabindex="-1">
-                      {%- for childlink in link.links -%}
-                        <li>
-                          {%- if childlink.links == blank -%}
-                            <a href="{{ childlink.url }}" class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if childlink.current %} list-menu__item--active{% endif %}"{% if childlink.current %} aria-current="page"{% endif %}>
-                              {{ childlink.title | escape }}
-                            </a>
-                          {%- else -%}
-                            <details>
-                              <summary class="header__menu-item link link--text list-menu__item focus-inset caption-large">
-                                {{ childlink.title | escape }}
-                                {% render 'icon-caret' %}
-                              </summary>
-                              <ul class="header__submenu list-menu motion-reduce">
-                                {%- for grandchildlink in childlink.links -%}
-                                  <li>
-                                    <a href="{{ grandchildlink.url }}" class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if grandchildlink.current %} list-menu__item--active{% endif %}"{% if grandchildlink.current %} aria-current="page"{% endif %}>
-                                      {{ grandchildlink.title | escape }}
-                                    </a>
-                                  </li>
-                                {%- endfor -%}
-                              </ul>
-                            </details>
-                          {%- endif -%}
-                        </li>
-                      {%- endfor -%}
-                    </ul>
-                  </details>
-                </details-disclosure>
-              {%- else -%}
-                <a href="{{ link.url }}" class="header__menu-item header__menu-item list-menu__item link link--text focus-inset"{% if link.current %} aria-current="page"{% endif %}>
-                  <span {%- if link.current %} class="header__active-menu-item"{% endif %}>{{ link.title | escape }}</span>
+          <!-- 'Men' tab panel, show/hide based on tab state. -->
+          <div id="tabs-1-panel-2" class="space-y-10 px-4 pb-8 pt-10" aria-labelledby="tabs-1-tab-2" role="tabpanel" tabindex="0">
+            <div class="grid grid-cols-2 gap-x-4">
+              <div class="group relative text-sm">
+                <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
+                  <img src="https://tailwindui.com/img/ecommerce-images/product-page-04-detail-product-shot-01.jpg" alt="Drawstring top with elastic loop closure and textured interior padding." class="object-cover object-center">
+                </div>
+                <a href="#" class="mt-6 block font-medium text-gray-900">
+                  <span class="absolute inset-0 z-10" aria-hidden="true"></span>
+                  New Arrivals
                 </a>
-              {%- endif -%}
-            </li>
-          {%- endfor -%}
-        </ul>
-      </nav>
-    {%- endif -%}
-
-    <div class="header__icons">
-      <details-modal class="header__search">
-        <details>
-          <summary class="header__icon header__icon--search header__icon--summary link link--text focus-inset modal__toggle" aria-haspopup="dialog" aria-label="{{ 'general.search.search' | t }}">
-            <span>
-              <svg class="modal__toggle-open icon icon-search" aria-hidden="true" focusable="false" role="presentation">
-                <use href="#icon-search">
-              </svg>
-              <svg class="modal__toggle-close icon icon-close" aria-hidden="true" focusable="false" role="presentation">
-                <use href="#icon-close">
-              </svg>
-            </span>
-          </summary>
-          <div class="search-modal modal__content" role="dialog" aria-modal="true" aria-label="{{ 'general.search.search' | t }}">
-            <div class="search-modal__content" tabindex="-1">
-              <form action="{{ routes.search_url }}" method="get" role="search" class="search search-modal__form">
-                <div class="field">
-                  <input class="search__input field__input" id="Search-In-Modal" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.search' | t }}">
-                  <label class="field__label" for="Search-In-Modal">{{ 'general.search.search' | t }}</label>
-                  <input type="hidden" name="options[prefix]" value="last">
-                  <button class="search__button field__button focus-inset" aria-label="{{ 'general.search.search' | t }}">
-                    <svg class="icon icon-search" aria-hidden="true" focusable="false" role="presentation">
-                      <use href="#icon-search">
-                    </svg>
-                  </button>
+                <p aria-hidden="true" class="mt-1">Shop now</p>
+              </div>
+              <div class="group relative text-sm">
+                <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
+                  <img src="https://tailwindui.com/img/ecommerce-images/category-page-02-image-card-06.jpg" alt="Three shirts in gray, white, and blue arranged on table with same line drawing of hands and shapes overlapping on front of shirt." class="object-cover object-center">
                 </div>
-              </form>
-              <button type="button" class="search-modal__close-button modal__close-button link link--text focus-inset" aria-label="{{ 'accessibility.close' | t }}">
-                <svg class="icon icon-close" aria-hidden="true" focusable="false" role="presentation">
-                  <use href="#icon-close">
-                </svg>
-              </button>
+                <a href="#" class="mt-6 block font-medium text-gray-900">
+                  <span class="absolute inset-0 z-10" aria-hidden="true"></span>
+                  Artwork Tees
+                </a>
+                <p aria-hidden="true" class="mt-1">Shop now</p>
+              </div>
+            </div>
+            <div>
+              <p id="men-clothing-heading-mobile" class="font-medium text-gray-900">Clothing</p>
+              <ul role="list" aria-labelledby="men-clothing-heading-mobile" class="mt-6 flex flex-col space-y-6">
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Tops</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Pants</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Sweaters</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">T-Shirts</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Jackets</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Activewear</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Browse All</a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p id="men-accessories-heading-mobile" class="font-medium text-gray-900">Accessories</p>
+              <ul role="list" aria-labelledby="men-accessories-heading-mobile" class="mt-6 flex flex-col space-y-6">
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Watches</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Wallets</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Bags</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Sunglasses</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Hats</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Belts</a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p id="men-brands-heading-mobile" class="font-medium text-gray-900">Brands</p>
+              <ul role="list" aria-labelledby="men-brands-heading-mobile" class="mt-6 flex flex-col space-y-6">
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Re-Arranged</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Counterfeit</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">Full Nelson</a>
+                </li>
+                <li class="flow-root">
+                  <a href="#" class="-m-2 block p-2 text-gray-500">My Way</a>
+                </li>
+              </ul>
             </div>
           </div>
-        </details>
-      </details-modal>
+        </div>
 
-      {%- if shop.customer_accounts_enabled -%}
-        <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header__icon header__icon--account link link--text focus-inset">
-          {% render 'icon-account' %}
-          <span class="visually-hidden">
-            {%- liquid
-              if customer
-                echo 'customer.account_fallback' | t
-              else
-                echo 'customer.log_in' | t
-              endif
-            -%}
-          </span>
-        </a>
-      {%- endif -%}
-
-      <a href="{{ routes.cart_url }}" class="header__icon header__icon--cart link link--text focus-inset" id="cart-icon-bubble">
-        {%- liquid
-          if cart == empty
-            render 'icon-cart-empty'
-          else
-            render 'icon-cart'
-          endif
-        -%}
-        <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
-        {%- if cart != empty -%}
-          <div class="cart-count-bubble">
-            {%- if cart.item_count < 100 -%}
-              <span aria-hidden="true">{{ cart.item_count }}</span>
-            {%- endif -%}
-            <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+        <div class="space-y-6 border-t border-gray-200 px-4 py-6">
+          <div class="flow-root">
+            <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Company</a>
           </div>
-        {%- endif -%}
-      </a>
+          <div class="flow-root">
+            <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Stores</a>
+          </div>
+        </div>
+
+        <div class="space-y-6 border-t border-gray-200 px-4 py-6">
+          <div class="flow-root">
+            <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Sign in</a>
+          </div>
+          <div class="flow-root">
+            <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Create account</a>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-200 px-4 py-6">
+          <a href="#" class="-m-2 flex items-center p-2">
+            <img src="https://tailwindui.com/img/flags/flag-canada.svg" alt="" class="block h-auto w-5 flex-shrink-0">
+            <span class="ml-3 block text-base font-medium text-gray-900">CAD</span>
+            <span class="sr-only">, change currency</span>
+          </a>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <header class="relative bg-white">
+    <p class="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">Get free delivery on orders over $100</p>
+
+    <nav aria-label="Top" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="border-b border-gray-200">
+        <div class="flex h-16 items-center">
+          <!-- Mobile menu toggle, controls the 'mobileMenuOpen' state. -->
+          <button type="button" class="rounded-md bg-white p-2 text-gray-400 lg:hidden">
+            <span class="sr-only">Open menu</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+
+          <!-- Logo -->
+          <div class="ml-4 flex lg:ml-0">
+            <a href="#">
+              <span class="sr-only">Your Company</span>
+              <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="">
+            </a>
+          </div>
+
+          <!-- Flyout menus -->
+          <div class="hidden lg:ml-8 lg:block lg:self-stretch">
+            <div class="flex h-full space-x-8">
+              <div class="flex">
+                <div class="relative flex">
+                  <!-- Item active: "border-indigo-600 text-indigo-600", Item inactive: "border-transparent text-gray-700 hover:text-gray-800" -->
+                  <button type="button" class="border-transparent text-gray-700 hover:text-gray-800 relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out" aria-expanded="false">Women</button>
+                </div>
+
+                <!--
+                  'Women' flyout menu, show/hide based on flyout menu state.
+
+                  Entering: "transition ease-out duration-200"
+                    From: "opacity-0"
+                    To: "opacity-100"
+                  Leaving: "transition ease-in duration-150"
+                    From: "opacity-100"
+                    To: "opacity-0"
+                -->
+                <div class="absolute inset-x-0 top-full text-sm text-gray-500">
+                  <!-- Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow -->
+                  <div class="absolute inset-0 top-1/2 bg-white shadow" aria-hidden="true"></div>
+
+                  <div class="relative bg-white">
+                    <div class="mx-auto max-w-7xl px-8">
+                      <div class="grid grid-cols-2 gap-x-8 gap-y-10 py-16">
+                        <div class="col-start-2 grid grid-cols-2 gap-x-8">
+                          <div class="group relative text-base sm:text-sm">
+                            <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
+                              <img src="https://tailwindui.com/img/ecommerce-images/mega-menu-category-01.jpg" alt="Models sitting back to back, wearing Basic Tee in black and bone." class="object-cover object-center">
+                            </div>
+                            <a href="#" class="mt-6 block font-medium text-gray-900">
+                              <span class="absolute inset-0 z-10" aria-hidden="true"></span>
+                              New Arrivals
+                            </a>
+                            <p aria-hidden="true" class="mt-1">Shop now</p>
+                          </div>
+                          <div class="group relative text-base sm:text-sm">
+                            <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
+                              <img src="https://tailwindui.com/img/ecommerce-images/mega-menu-category-02.jpg" alt="Close up of Basic Tee fall bundle with off-white, ochre, olive, and black tees." class="object-cover object-center">
+                            </div>
+                            <a href="#" class="mt-6 block font-medium text-gray-900">
+                              <span class="absolute inset-0 z-10" aria-hidden="true"></span>
+                              Basic Tees
+                            </a>
+                            <p aria-hidden="true" class="mt-1">Shop now</p>
+                          </div>
+                        </div>
+                        <div class="row-start-1 grid grid-cols-3 gap-x-8 gap-y-10 text-sm">
+                          <div>
+                            <p id="Clothing-heading" class="font-medium text-gray-900">Clothing</p>
+                            <ul role="list" aria-labelledby="Clothing-heading" class="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Tops</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Dresses</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Pants</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Denim</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Sweaters</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">T-Shirts</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Jackets</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Activewear</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Browse All</a>
+                              </li>
+                            </ul>
+                          </div>
+                          <div>
+                            <p id="Accessories-heading" class="font-medium text-gray-900">Accessories</p>
+                            <ul role="list" aria-labelledby="Accessories-heading" class="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Watches</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Wallets</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Bags</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Sunglasses</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Hats</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Belts</a>
+                              </li>
+                            </ul>
+                          </div>
+                          <div>
+                            <p id="Brands-heading" class="font-medium text-gray-900">Brands</p>
+                            <ul role="list" aria-labelledby="Brands-heading" class="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Full Nelson</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">My Way</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Re-Arranged</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Counterfeit</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Significant Other</a>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex">
+                <div class="relative flex">
+                  <!-- Item active: "border-indigo-600 text-indigo-600", Item inactive: "border-transparent text-gray-700 hover:text-gray-800" -->
+                  <button type="button" class="border-transparent text-gray-700 hover:text-gray-800 relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out" aria-expanded="false">Men</button>
+                </div>
+
+                <!--
+                  'Men' flyout menu, show/hide based on flyout menu state.
+
+                  Entering: "transition ease-out duration-200"
+                    From: "opacity-0"
+                    To: "opacity-100"
+                  Leaving: "transition ease-in duration-150"
+                    From: "opacity-100"
+                    To: "opacity-0"
+                -->
+                <div class="absolute inset-x-0 top-full text-sm text-gray-500">
+                  <!-- Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow -->
+                  <div class="absolute inset-0 top-1/2 bg-white shadow" aria-hidden="true"></div>
+
+                  <div class="relative bg-white">
+                    <div class="mx-auto max-w-7xl px-8">
+                      <div class="grid grid-cols-2 gap-x-8 gap-y-10 py-16">
+                        <div class="col-start-2 grid grid-cols-2 gap-x-8">
+                          <div class="group relative text-base sm:text-sm">
+                            <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
+                              <img src="https://tailwindui.com/img/ecommerce-images/product-page-04-detail-product-shot-01.jpg" alt="Drawstring top with elastic loop closure and textured interior padding." class="object-cover object-center">
+                            </div>
+                            <a href="#" class="mt-6 block font-medium text-gray-900">
+                              <span class="absolute inset-0 z-10" aria-hidden="true"></span>
+                              New Arrivals
+                            </a>
+                            <p aria-hidden="true" class="mt-1">Shop now</p>
+                          </div>
+                          <div class="group relative text-base sm:text-sm">
+                            <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
+                              <img src="https://tailwindui.com/img/ecommerce-images/category-page-02-image-card-06.jpg" alt="Three shirts in gray, white, and blue arranged on table with same line drawing of hands and shapes overlapping on front of shirt." class="object-cover object-center">
+                            </div>
+                            <a href="#" class="mt-6 block font-medium text-gray-900">
+                              <span class="absolute inset-0 z-10" aria-hidden="true"></span>
+                              Artwork Tees
+                            </a>
+                            <p aria-hidden="true" class="mt-1">Shop now</p>
+                          </div>
+                        </div>
+                        <div class="row-start-1 grid grid-cols-3 gap-x-8 gap-y-10 text-sm">
+                          <div>
+                            <p id="Clothing-heading" class="font-medium text-gray-900">Clothing</p>
+                            <ul role="list" aria-labelledby="Clothing-heading" class="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Tops</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Pants</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Sweaters</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">T-Shirts</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Jackets</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Activewear</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Browse All</a>
+                              </li>
+                            </ul>
+                          </div>
+                          <div>
+                            <p id="Accessories-heading" class="font-medium text-gray-900">Accessories</p>
+                            <ul role="list" aria-labelledby="Accessories-heading" class="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Watches</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Wallets</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Bags</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Sunglasses</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Hats</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Belts</a>
+                              </li>
+                            </ul>
+                          </div>
+                          <div>
+                            <p id="Brands-heading" class="font-medium text-gray-900">Brands</p>
+                            <ul role="list" aria-labelledby="Brands-heading" class="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Re-Arranged</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Counterfeit</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">Full Nelson</a>
+                              </li>
+                              <li class="flex">
+                                <a href="#" class="hover:text-gray-800">My Way</a>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <a href="#" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Company</a>
+              <a href="#" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800">Stores</a>
+            </div>
+          </div>
+
+          <div class="ml-auto flex items-center">
+            <div class="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
+              <a href="#" class="text-sm font-medium text-gray-700 hover:text-gray-800">Sign in</a>
+              <span class="h-6 w-px bg-gray-200" aria-hidden="true"></span>
+              <a href="#" class="text-sm font-medium text-gray-700 hover:text-gray-800">Create account</a>
+            </div>
+
+            <div class="hidden lg:ml-8 lg:flex">
+              <a href="#" class="flex items-center text-gray-700 hover:text-gray-800">
+                <img src="https://tailwindui.com/img/flags/flag-canada.svg" alt="" class="block h-auto w-5 flex-shrink-0">
+                <span class="ml-3 block text-sm font-medium">CAD</span>
+                <span class="sr-only">, change currency</span>
+              </a>
+            </div>
+
+            <!-- Search -->
+            <div class="flex lg:ml-6">
+              <a href="#" class="p-2 text-gray-400 hover:text-gray-500">
+                <span class="sr-only">Search</span>
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+              </a>
+            </div>
+
+            <!-- Cart -->
+            <div class="ml-4 flow-root lg:ml-6">
+              <a href="#" class="group -m-2 flex items-center p-2">
+                <svg class="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+                <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">0</span>
+                <span class="sr-only">items in cart, view bag</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
   </header>
-</{% if section.settings.enable_sticky_header %}sticky-header{% else %}div{% endif %}>
-
-{%- if request.page_type != 'cart' -%}
-  {%- render 'cart-notification' -%}
-{%- endif -%}
-
-{% javascript %}
-  class StickyHeader extends HTMLElement {
-    constructor() {
-      super();
-    }
-
-    connectedCallback() {
-      this.header = document.getElementById('shopify-section-header');
-      this.headerBounds = {};
-      this.currentScrollTop = 0;
-
-      this.onScrollHandler = this.onScroll.bind(this);
-
-      window.addEventListener('scroll', this.onScrollHandler, false);
-
-      this.createObserver();
-    }
-
-    disconnectedCallback() {
-      window.removeEventListener('scroll', this.onScrollHandler);
-    }
-
-    createObserver() {
-      let observer = new IntersectionObserver((entries, observer) => {
-        this.headerBounds = entries[0].intersectionRect;
-        observer.disconnect();
-      });
-
-      observer.observe(this.header);
-    }
-
-    onScroll() {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-      if (scrollTop > this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
-        requestAnimationFrame(this.hide.bind(this));
-      } else if (scrollTop < this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
-        requestAnimationFrame(this.reveal.bind(this));
-      } else if (scrollTop <= this.headerBounds.top) {
-        requestAnimationFrame(this.reset.bind(this));
-      }
-
-      this.currentScrollTop = scrollTop;
-    }
-
-    hide() {
-      this.header.classList.add('shopify-section-header-hidden', 'shopify-section-header-sticky');
-      this.closeMenuDisclosure();
-      this.closeSearchModal();
-    }
-
-    reveal() {
-      this.header.classList.add('shopify-section-header-sticky', 'animate');
-      this.header.classList.remove('shopify-section-header-hidden');
-    }
-
-    reset() {
-      this.header.classList.remove('shopify-section-header-hidden', 'shopify-section-header-sticky', 'animate');
-    }
-
-    closeMenuDisclosure() {
-      this.disclosures = this.disclosures || this.header.querySelectorAll('details-disclosure');
-      this.disclosures.forEach(disclosure => disclosure.close());
-    }
-
-    closeSearchModal() {
-      this.searchModal = this.searchModal || this.header.querySelector('details-modal');
-      this.searchModal.close(false);
-    }
-  }
-
-  customElements.define('sticky-header', StickyHeader);
-{% endjavascript %}
+</div>
 
 <script type="application/ld+json">
   {
