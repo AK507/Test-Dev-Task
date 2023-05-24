@@ -1099,6 +1099,30 @@ video {
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 
+.main-menu-list .mega-menu-dropdwon {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s ease;
+  z-index: 999;
+}
+
+.main-menu-list >.active .mega-menu-dropdwon {
+  opacity: 1;
+  visibility: visible;
+}
+
+.visually-hidden {
+  position: absolute!important;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  word-wrap: normal!important;
+}
+
 .hover\:text-gray-500:hover {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity));
