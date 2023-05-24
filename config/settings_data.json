@@ -21,11 +21,30 @@
               "url": "#",
               "label": "Basic Tees"
             }
+          },
+          "4fc8fa8d-4098-41cb-a1c5-355be74b3aed": {
+            "type": "mega-menu",
+            "settings": {
+              "parent": "Men",
+              "image": "shopify:\/\/shop_images\/product-page-04-detail-product-shot-01.jpg",
+              "url": "#",
+              "label": "New Arrivals"
+            }
+          },
+          "f78b220d-9880-41aa-bdc7-bd4fc72ea449": {
+            "type": "mega-menu",
+            "settings": {
+              "parent": "Men",
+              "url": "#",
+              "label": "Artwork Tees"
+            }
           }
         },
         "block_order": [
           "bed2581a-25d4-48b1-ad3b-6c175d18f5b6",
-          "25d3488d-7bdc-4067-b372-f9b56a1ba681"
+          "25d3488d-7bdc-4067-b372-f9b56a1ba681",
+          "4fc8fa8d-4098-41cb-a1c5-355be74b3aed",
+          "f78b220d-9880-41aa-bdc7-bd4fc72ea449"
         ],
         "settings": {
           "logo": "shopify:\/\/shop_images\/logo.png",
