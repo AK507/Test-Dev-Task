@@ -1,2 +1,90 @@
 {
+  "current": {
+    "sections": {
+      "header": {
+        "type": "header",
+        "blocks": {
+          "bed2581a-25d4-48b1-ad3b-6c175d18f5b6": {
+            "type": "mega-menu",
+            "settings": {
+              "parent": "Women",
+              "image": "shopify:\/\/shop_images\/mega-menu-category-01.jpg",
+              "url": "#",
+              "label": "New Arrivals"
+            }
+          },
+          "25d3488d-7bdc-4067-b372-f9b56a1ba681": {
+            "type": "mega-menu",
+            "settings": {
+              "parent": "Women",
+              "image": "shopify:\/\/shop_images\/mega-menu-category-02.jpg",
+              "url": "#",
+              "label": "Basic Tees"
+            }
+          },
+          "4fc8fa8d-4098-41cb-a1c5-355be74b3aed": {
+            "type": "mega-menu",
+            "settings": {
+              "parent": "Men",
+              "image": "shopify:\/\/shop_images\/product-page-04-detail-product-shot-01.jpg",
+              "url": "#",
+              "label": "New Arrivals"
+            }
+          },
+          "f78b220d-9880-41aa-bdc7-bd4fc72ea449": {
+            "type": "mega-menu",
+            "settings": {
+              "parent": "Men",
+              "url": "#",
+              "label": "Artwork Tees"
+            }
+          }
+        },
+        "block_order": [
+          "bed2581a-25d4-48b1-ad3b-6c175d18f5b6",
+          "25d3488d-7bdc-4067-b372-f9b56a1ba681",
+          "4fc8fa8d-4098-41cb-a1c5-355be74b3aed",
+          "f78b220d-9880-41aa-bdc7-bd4fc72ea449"
+        ],
+        "settings": {
+          "logo": "shopify:\/\/shop_images\/logo.png",
+          "logo_width": 100,
+          "logo_position": "middle-left",
+          "menu": "main-menu",
+          "show_line_separator": true,
+          "enable_sticky_header": true,
+          "announcement_text": "Get free delivery on orders over $100",
+          "text_color": "#fff",
+          "bg_color": "#4f46e5"
+        }
+      },
+      "footer": {
+        "type": "footer",
+        "blocks": {
+          "footer-0": {
+            "type": "link_list",
+            "settings": {
+              "heading": "Quick links",
+              "menu": "footer"
+            }
+          }
+        },
+        "block_order": [
+          "footer-0"
+        ],
+        "settings": {
+          "color_scheme": "background-1",
+          "newsletter_enable": true,
+          "newsletter_heading": "Sign up to our emails",
+          "show_social": false,
+          "enable_country_selector": true,
+          "enable_language_selector": true,
+          "payment_enable": true
+        }
+      }
+    },
+    "content_for_index": [
+
+    ]
+  }
 }
