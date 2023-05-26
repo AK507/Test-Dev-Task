@@ -16,9 +16,11 @@
                 <div class="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                   {% for i in (1..3) %}
                   {% assign img = "img" | append: i %}
+                  {% if block.settings[img] != blank %}
                   <div class="h-64 w-44 overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100">
                     <img src="{{ block.settings[img] | img_url: 'master' }}" alt="" class="h-full w-full object-cover object-center">
                   </div>
+                  {% endif %}
                   {% endfor %}
                   
                 </div>
