@@ -5,7 +5,7 @@
   <div class="gs tv arf ast aun cgw dcv dey">
     <div class="dim djx dkj">
       <div class="abu">
-        <img width="100" src="src/logo.png" alt="Company name" />
+        <img width="100" src="{{ section.settings.logo | img_url: 'master' }}" alt="{{ shop.name }}" />
         <p class="avv awk axj">Making the world a better place through constructing elegant hierarchies.</p>
         <div class="ls abg">
           <a href="#" class="axm bkq">
@@ -167,6 +167,11 @@
     }
   ],
   "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
     {
       "id": "color_scheme",
       "type": "select",
