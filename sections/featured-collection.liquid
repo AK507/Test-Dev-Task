@@ -1,92 +1,46 @@
-<link rel="stylesheet" href="{{ 'component-slider.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-badge.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'template-collection.css' | asset_url }}" media="print" onload="this.media='all'">
+<!-- New Arrivals -->
 
-<noscript>{{ 'component-slider.css' | asset_url | stylesheet_tag }}</noscript>
-<noscript>{{ 'component-price.css' | asset_url | stylesheet_tag }}</noscript>
-<noscript>{{ 'component-badge.css' | asset_url | stylesheet_tag }}</noscript>
-<noscript>{{ 'template-collection.css' | asset_url | stylesheet_tag }}</noscript>
+<div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+  <h2 class="text-2xl font-bold tracking-tight text-gray-900">New Arrivals</h2>
 
-{{ 'component-card.css' | asset_url | stylesheet_tag }}
-
-<div class="collection page-width{% if section.settings.collection.products.size == 1 %} page-width--narrow{% endif %}{% if section.settings.swipe_on_mobile == true and section.settings.collection.products.size > 2 and section.settings.products_to_show > 2 %} page-width-desktop{% endif %}">
-  <div class="{% if section.settings.show_view_all and section.settings.swipe_on_mobile %}title-wrapper-with-link{% endif %}{% if section.settings.title == blank %} title-wrapper-with-link--no-heading{% endif %}{% if section.settings.collection.products.size > 2 and section.settings.swipe_on_mobile and section.settings.products_to_show > 2 %} title-wrapper--self-padded-tablet-down{% endif %}">
-    <h2 class="title">{{ section.settings.title | escape }}</h2>
-
-    {%- if section.settings.show_view_all and section.settings.swipe_on_mobile -%}
-      <a href="{{ section.settings.collection.url }}" class="link underlined-link large-up-hide">{{ 'sections.featured_collection.view_all' | t }}</a>
-    {%- endif -%}
-  </div>
-
-  {%- liquid
-    assign products_to_display = section.settings.collection.products.size
-    assign computed_grid_class = 'grid--3-col-tablet grid--4-col-desktop'
-
-    if section.settings.collection.products.size > section.settings.products_to_show
-      assign products_to_display = section.settings.products_to_show
-    endif
-
-    if products_to_display > 3 or section.settings.collection != blank
-      assign computed_grid_class = 'grid--2-col grid--3-col-tablet grid--one-third-max grid--4-col-desktop grid--quarter-max'
-    endif
-  %}
-
-  <slider-component class="slider-mobile-gutter">
-    <ul class="grid {{ computed_grid_class }}{% if section.settings.collection.products.size < 3 %} grid--{{ section.settings.collection.products.size }}-col{% endif %}{% if section.settings.collection.products.size > 2 and section.settings.swipe_on_mobile and section.settings.products_to_show > 2 %} slider slider--tablet grid--peek{% endif %}" role="list">
-      {%- for product in section.settings.collection.products limit: section.settings.products_to_show -%}
-        <li class="grid__item{% if section.settings.collection.products.size > 2 and section.settings.swipe_on_mobile and section.settings.products_to_show > 2 %} slider__slide{% endif %}">
-          {%- if section.settings.collection.products.size == 1 -%}
-            {% render 'product-card',
-              product_card_product: product,
-              media_size: section.settings.image_ratio,
-              show_secondary_image: section.settings.show_secondary_image,
-              add_image_padding: section.settings.add_image_padding,
-              show_vendor: section.settings.show_vendor
-            %}
-          {%- else -%}
-            {% render 'product-card',
-              product_card_product: product,
-              media_size: section.settings.image_ratio,
-              show_secondary_image: section.settings.show_secondary_image,
-              add_image_padding: section.settings.add_image_padding,
-              show_vendor: section.settings.show_vendor
-            %}
-          {%- endif -%}
-        </li>
-      {%- else -%}
-        {%- for i in (1..4) -%}
-          <li class="grid__item">
-            {% render 'product-card-placeholder' %}
-          </li>
-        {%- endfor -%}
-      {%- endfor -%}
-    </ul>
-    {%- if section.settings.collection.products.size > 2 and section.settings.swipe_on_mobile and section.settings.products_to_show > 2 -%}
-      <div class="slider-buttons no-js-hidden{% if section.settings.collection.products.size < 4 %} medium-hide{% endif %}{% if section.settings.collection.products.size < 3 %} small-hide{% endif %}">
-        <div class="slider-counter caption">
-          <span class="slider-counter--current">1</span>
-          <span aria-hidden="true"> / </span>
-          <span class="visually-hidden">{{ 'accessibility.of' | t }}</span>
-          <span class="slider-counter--total">{{ products_to_display }}</span>
-        </div>
-        <button type="button" class="slider-button slider-button--prev" name="previous" aria-label="{{ 'accessibility.previous_slide' | t }}">{% render 'icon-caret' %}</button>
-        <button type="button" class="slider-button slider-button--next" name="next" aria-label="{{ 'accessibility.next_slide' | t }}">{% render 'icon-caret' %}</button>
+  <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+    {%- for product in section.settings.collection.products limit: section.settings.products_to_show -%}
+    <div class="group relative">
+      <div class="min-h-80 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+        <img srcset="{%- if product.featured_media.width >= 165 -%}{{ product.featured_media | img_url: '165x' }} 165w,{%- endif -%}
+                {%- if product.featured_media.width >= 360 -%}{{ product.featured_media | img_url: '360x' }} 360w,{%- endif -%}
+                {%- if product.featured_media.width >= 533 -%}{{ product.featured_media | img_url: '533x' }} 533w,{%- endif -%}
+                {%- if product.featured_media.width >= 720 -%}{{ product.featured_media | img_url: '720x' }} 720w,{%- endif -%}
+                {%- if product.featured_media.width >= 940 -%}{{ product.featured_media | img_url: '940x' }} 940w,{%- endif -%}
+                {%- if product.featured_media.width >= 1066 -%}{{ product.featured_media | img_url: '1066x' }} 1066w{%- endif -%}"
+                src="{{ product.featured_media | img_url: '533x' }}"
+                sizes="(min-width: 1100px) 535px, (min-width: 750px) calc((100vw - 130px) / 2), calc((100vw - 50px) / 2)"
+                alt="{{ product.featured_media.alt | escape }}"
+                loading="lazy"
+                class="h-full w-full object-cover object-center lg:h-full lg:w-full"
+              >
+        <!--img src="https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg" alt="Front of men&#039;s Basic Tee in black." class="h-full w-full object-cover object-center lg:h-full lg:w-full"-->
       </div>
-    {%- endif -%}
-  </slider-component>
-
-  {%- if section.settings.show_view_all and section.settings.collection.products.size > section.settings.products_to_show -%}
-    <div class="center{% if section.settings.swipe_on_mobile %} small-hide medium-hide{% endif %}">
-      <a href="{{ section.settings.collection.url }}"
-        class="button"
-        aria-label="{{ 'sections.featured_collection.view_all_label' | t: collection_name: section.settings.collection.title }}"
-      >
-        {{ 'sections.featured_collection.view_all' | t }}
-      </a>
+      <div class="mt-4 flex justify-between">
+        <div>
+          <h3 class="text-sm text-gray-700">
+            <a href="#">
+              <span aria-hidden="true" class="absolute inset-0"></span>
+              {{ product.title | escape }}
+            </a>
+          </h3>
+          <!--p class="mt-1 text-sm text-gray-500">Black</p-->
+        </div>
+        <p class="text-sm font-medium text-gray-900">{{ product.selected_or_first_available_variant.price | money }}</p>
+      </div>
     </div>
-  {%- endif -%}
+    {% endfor %}
+
+    <!-- More products... -->
+  </div>
 </div>
+
+<!-- End New Arrivals -->
 
 {% schema %}
 {
