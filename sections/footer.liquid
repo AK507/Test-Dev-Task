@@ -42,77 +42,46 @@
       </div>
       <div class="kv lw yd zo dgx die">
         <div class="ckz cmh cmx">
+          {% assign counter = 1 %}
+          {% for block in section.blocks %}
+            {% if block.type == "link_list" and counter <= 2 %}
           <div>
-            <h3 class="avv awb awk bac">Solutions</h3>
+            {% if block.settings.heading != blank %}
+              <h3 class="avv awb awk bac">{{ block.settings.heading }}</h3>
+            {% endif %}
             <ul role="list" class="lf abr">
-              <li>
-                <a href="#" class="avv awk axj blo">Marketing</a>
-              </li>
-              <li>
-                <a href="#" class="avv awk axj blo">Analytics</a>
-              </li>
-              <li>
-                <a href="#" class="avv awk axj blo">Commerce</a>
-              </li>
-              <li>
-                <a href="#" class="avv awk axj blo">Insights</a>
-              </li>
+              {%- for link in block.settings.menu.links -%}
+                <li>
+                  <a href="{{ link.url }}" class="avv awk axj blo">{{ link.title }}</a>
+                </li>
+              {% endfor %}
             </ul>
           </div>
-          <div class="kr ckk">
-            <h3 class="avv awb awk bac">Support</h3>
-            <ul role="list" class="lf abr">
-              <li>
-                <a href="#" class="avv awk axj blo">Pricing</a>
-              </li>
-              <li>
-                <a href="#" class="avv awk axj blo">Documentation</a>
-              </li>
-              <li>
-                <a href="#" class="avv awk axj blo">Guides</a>
-              </li>
-              <li>
-                <a href="#" class="avv awk axj blo">API Status</a>
-              </li>
-            </ul>
-          </div>
+            {% assign counter = counter | plus: 1 %}
+            {% endif %}
+          {% endfor %}
         </div>
-        <div class="ckz cmh cmx">
+        <div class="ckz cmh cmx s123abc">
+          {% assign counter1 = 1 %}
+          {% for block in section.blocks offset: 2 %}
+            {% if block.type == "link_list" and counter1 <= 2 %}
           <div>
-            <h3 class="avv awb awk bac">Company</h3>
+            {% if block.settings.heading != blank %}
+              <h3 class="avv awb awk bac">{{ block.settings.heading }}</h3>
+            {% endif %} 
             <ul role="list" class="lf abr">
-              <li>
-                <a href="#" class="avv awk axj blo">About</a>
-              </li>
-              <li>
-                <a href="#" class="avv awk axj blo">Blog</a>
-              </li>
-              <li>
-                <a href="#" class="avv awk axj blo">Jobs</a>
-              </li>
-              <li>
-                <a href="#" class="avv awk axj blo">Press</a>
-              </li>
-              <li>
-                <a href="#" class="avv awk axj blo">Partners</a>
-              </li>
+              {%- for link in block.settings.menu.links -%}
+                <li>
+                  <a href="{{ link.url }}" class="avv awk axj blo">{{ link.title }}</a>
+                </li>
+              {% endfor %}
             </ul>
           </div>
-          <div class="kr ckk">
-            <h3 class="avv awb awk bac">Legal</h3>
-            <ul role="list" class="lf abr">
-              <li>
-                <a href="#" class="avv awk axj blo">Claim</a>
-              </li>
-              <li>
-                <a href="#" class="avv awk axj blo">Privacy</a>
-              </li>
-              <li>
-                <a href="#" class="avv awk axj blo">Terms</a>
-              </li>
-            </ul>
-          </div>
+            {% assign counter1 = counter1 | plus: 1 %}
+            {% endif %}
+          {% endfor %}
         </div>
+        
       </div>
     </div>
     <div class="kv afh agv avb bwr cub">
