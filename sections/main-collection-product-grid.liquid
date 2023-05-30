@@ -1,56 +1,78 @@
-<div class="container mx-auto py-8">
-  <div class="grid grid-cols-4 gap-4">
-    <div class="col-span-1">
-      <div class="bg-gray-200 p-4 rounded-lg">
-        <h2 class="text-xl font-bold mb-4">Filters</h2>
-        <ul class="space-y-2">
-          {% for tag in collection.all_tags %}
-            <li class="flex items-center">
-              <input type="checkbox" id="{{ tag | handle }}" class="mr-2">
-              <label for="{{ tag | handle }}">{{ tag }}</label>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-    <div class="col-span-3">
-      <div class="grid grid-cols-3 gap-4">
-        {% for product in collection.products %}
-          <div class="bg-white p-4 rounded-lg shadow">
-            <h2 class="text-lg font-bold mb-2">{{ product.title }}</h2>
-            <p class="text-gray-600 mb-4">{{ product.description }}</p>
-            <p class="text-lg font-bold text-green-500">${{ product.price }}</p>
-            <a href="{{ product.url }}" class="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-4 py-2 inline-block mt-4">View Product</a>
+{% assign gridColumns = 'grid-cols-3' %}
+<div class="flex">
+  <div id="sidebar-filter" class="p-4">
+    <!-- Sidebar filter code here -->
+    {% include 'collection-sidebar' %}
+  </div>
+  <div class="flex-grow">
+    <div class="grid {{ gridColumns }} gap-4">
+      {% for product in collection.products %}
+        <div class="relative bg-white shadow-lg rounded-lg overflow-hidden">
+          <a href="{{ product.url }}" class="block">
+            <div class="aspect-w-1 aspect-h-1">
+              <img src="{{ product.featured_image | img_url: 'medium' }}" 
+                  alt="{{ product.title }}" 
+                  class="object-cover primary-image">
+              <img src="{{ product.images[1] | img_url: 'medium' }}" 
+                  alt="{{ product.title }}" 
+                  class="absolute top-0 left-0 object-cover secondary-image opacity-0 transition-opacity duration-300">
+            </div>
+          </a>
+          <div class="p-4">
+            <a href="{{ product.url }}" class="block text-lg font-semibold text-gray-800 hover:text-gray-600">{{ product.title }}</a>
+            <p class="mt-2 text-gray-600">{{ product.price | money }}</p>
+            {% if product.compare_at_price > product.price %}
+              <p class="mt-1 text-sm text-gray-500 line-through">{{ product.compare_at_price | money }}</p>
+            {% endif %}
           </div>
-        {% endfor %}
-      </div>
+        </div>
+      {% endfor %}
     </div>
   </div>
 </div>
 
+<style>
+
+  .aspect-w-1 > img,
+  .aspect-h-1 > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .aspect-w-1:hover .primary-image {
+    opacity: 0;
+  }
+
+  .aspect-w-1:hover .secondary-image {
+    opacity: 1;
+  }
+</style>
+
 <script>
-  // JavaScript code for handling sidebar filters
-  document.addEventListener('DOMContentLoaded', function () {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(function (checkbox) {
-      checkbox.addEventListener('change', function () {
-        const selectedTags = Array.from(checkboxes)
-          .filter(function (checkbox) {
-            return checkbox.checked;
-          })
-          .map(function (checkbox) {
-            return checkbox.id;
-          });
-        
-        // Update the collection URL with selected tags
-        const collectionUrl = '{{ collection.url }}';
-        const tagsQuery = selectedTags.length > 0 ? '?tags=' + selectedTags.join('+') : '';
-        const filteredUrl = collectionUrl + tagsQuery;
-        
-        // Redirect to the filtered collection page
-        window.location.href = filteredUrl;
+  document.addEventListener('DOMContentLoaded', function() {
+    const lazyImages = [].slice.call(document.querySelectorAll('.lazy'));
+
+    if ('IntersectionObserver' in window) {
+      const lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            const lazyImage = entry.target;
+            lazyImage.src = lazyImage.dataset.src;
+            lazyImage.srcset = lazyImage.dataset.srcset;
+            lazyImage.classList.remove('lazy');
+            lazyImageObserver.unobserve(lazyImage);
+          }
+        });
       });
-    });
+
+      lazyImages.forEach(function(lazyImage) {
+        lazyImageObserver.observe(lazyImage);
+      });
+    }
   });
 </script>
 
