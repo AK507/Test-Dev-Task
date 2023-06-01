@@ -1,5 +1,95 @@
 <h3 class="text-lg font-semibold mb-4">Filter</h3>
   <div class="mb-4">
+    {% for filter in collection.filters %}
+      {% case filter.type %}
+        {% when 'list' %}
+      <h3>List</h3>
+      <ul class="facets__list list-unstyled" role="list">
+        {%- for value in filter.values -%}
+          <li class="list-menu__item facets__item">
+            <label for="Filter-{{ filter.label | escape }}-{{ forloop.index }}" class="facet-checkbox{% if value.count == 0 and value.active == false %} facet-checkbox--disabled{% endif %}">
+              <input type="checkbox"
+                name="{{ value.param_name }}"
+                value="{{ value.value }}"
+                id="Filter-{{ filter.label | escape }}-{{ forloop.index }}"
+                {% if value.active %}checked{% endif %}
+                {% if value.count == 0 and value.active == false %}disabled{% endif %}
+              >
+
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <rect width="16" height="16" stroke="currentColor" fill="none" stroke-width="1"></rect>
+              </svg>
+
+              <svg class="icon icon-checkmark" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 9" fill="none" width="10px" height="10px">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.35.643a.5.5 0 01.006.707l-6.77 6.886a.5.5 0 01-.719-.006L.638 4.845a.5.5 0 11.724-.69l2.872 3.011 6.41-6.517a.5.5 0 01.707-.006h-.001z" fill="currentColor"/>
+              </svg>
+              {{ value.label | escape }} ({{ value.count }})
+            </label>
+          </li>
+        {%- endfor -%}
+      </ul>
+      {% when 'price_range'%}
+        <h3>Price</h3>
+        <details class="disclosure-has-popup facets__disclosure js-filter" data-index="{{ forloop.index }}">
+          <summary class="facets__summary">
+            <div>
+              <span>{{ filter.label | escape }}</span>
+              <span class="count-bubble{%- if filter.min_value.value or filter.max_value.value -%}{{ filter.active_values.size }} count-bubble--dot{% endif %}"></span>
+              {% render 'icon-caret' %}
+            </div>
+          </summary>
+          <div class="facets__display">
+            <div class="facets__header">
+              {%- assign max_price_amount = filter.range_max | money | escape -%}
+              <span class="facets__selected">{{ "sections.collection_template.max_price" | t: price: max_price_amount }}</span>
+              <a href="{{ filter.url_to_remove }}" class="facets__reset link underlined-link js-facet-remove" >{{ 'sections.collection_template.reset' | t }}</a>
+            </div>
+            <price-range class="facets__price">
+              <div class="field">
+                <span class="field__currency">{{ cart.currency.symbol }}</span>
+                <input class="field__input"
+                  name="{{ filter.min_value.param_name }}"
+                  id="Filter-{{ filter.label | escape }}-{{ forloop.index }}"
+                  {%- if filter.min_value.value -%}
+                    {%- if uses_comma_decimals -%}
+                      value="{{ filter.min_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+                    {%- else -%}
+                      value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+                    {% endif %}
+                  {%- endif -%}
+                  type="number"
+                  placeholder="0"
+                  min="0"
+                  max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
+                </input>
+                <label class="field__label" for="Search-In-Modal">{{ 'sections.collection_template.from' | t }}</label>
+              </div>
+              <div class="field">
+                <span class="field__currency">{{ cart.currency.symbol }}</span>
+                <input class="field__input"
+                  name="{{ filter.max_value.param_name }}"
+                  id="Filter-{{ filter.label | escape }}-{{ forloop.index }}"
+                  {%- if filter.max_value.value -%}
+                    {%- if uses_comma_decimals -%}
+                      value="{{ filter.max_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+                    {%- else -%}
+                      value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+                    {% endif %}
+                  {%- endif -%}
+                  type="number"
+                  placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                  min="0"
+                  max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
+                </input>
+                <label class="field__label" for="Search-In-Modal">{{ 'sections.collection_template.to' | t }}</label>
+              </div>
+            </div>
+          </price-range>
+        </details>
+      {% endcase %}
+    {% endfor %}
+  </div>
+  <div class="mb-4">
     <span class="block text-sm font-medium text-gray-700 mb-2">Tags:</span>
     {% for tag in collection.all_tags %}
       <label class="inline-flex items-center mr-4">
@@ -7,6 +97,24 @@
         <span class="ml-2">{{ tag }}</span>
       </label>
     {% endfor %}
+  </div>
+  <div class="mb-4">
+    <span class="block text-sm font-medium text-gray-700 mb-2">Colors:</span>
+    <div class="flex flex-wrap">
+      <label for="color1" class="inline-flex items-center mt-2 mr-4">
+        <input type="checkbox" id="color1" class="form-checkbox h-4 w-4 text-indigo-600 rounded-full">
+        <span class="rounded-full bg-indigo-600 h-8 w-8 mx-2"></span>
+      </label>
+      <label for="color2" class="inline-flex items-center mt-2 mr-4">
+        <input type="checkbox" id="color2" class="form-checkbox h-4 w-4 text-purple-600 rounded-full">
+        <span class="rounded-full bg-purple-600 h-8 w-8 mx-2"></span>
+      </label>
+      <label for="color3" class="inline-flex items-center mt-2 mr-4">
+        <input type="checkbox" id="color3" class="form-checkbox h-4 w-4 text-pink-600 rounded-full">
+        <span class="rounded-full bg-pink-600 h-8 w-8 mx-2"></span>
+      </label>
+      <!-- Add more color swatches as needed -->
+    </div>
   </div>
   <div class="mb-4">
     <span class="block text-sm font-medium text-gray-700 mb-2">Price:</span>

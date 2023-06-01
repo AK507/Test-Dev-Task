@@ -1,11 +1,12 @@
-{% assign gridColumns = 'grid-cols-3' %}
-<div class="flex">
-  <div id="sidebar-filter" class="p-4">
+{% assign gridColumns = 'grid-cols-4' %}
+<div class="flex mt-10">
+  <div id="sidebar-filter" class="p-4 w-1/3">
     <!-- Sidebar filter code here -->
     {% include 'collection-sidebar' %}
   </div>
   <div class="flex-grow">
-    <div class="grid {{ gridColumns }} gap-4">
+    {%- paginate collection.products by 6 -%}
+    <div id="bbb-product-grid" class="grid {{ gridColumns }} gap-4">
       {% for product in collection.products %}
         <div class="relative bg-white shadow-lg rounded-lg overflow-hidden">
           <a href="{{ product.url }}" class="block">
@@ -19,15 +20,31 @@
             </div>
           </a>
           <div class="p-4">
-            <a href="{{ product.url }}" class="block text-lg font-semibold text-gray-800 hover:text-gray-600">{{ product.title }}</a>
-            <p class="mt-2 text-gray-600">{{ product.price | money }}</p>
-            {% if product.compare_at_price > product.price %}
-              <p class="mt-1 text-sm text-gray-500 line-through">{{ product.compare_at_price | money }}</p>
-            {% endif %}
+            <a href="{{ product.url }}" class="block text-lg font-bold text-xl mb-2 text-gray-800 hover:text-gray-600">{{ product.title }}</a>
+            <div class="flex justify-between">
+              <p class="mt-2 text-gray-700 text-base">{{ product.price | money }}</p>
+              {% if product.compare_at_price > product.price %}
+                <p class="mt-1 text-red-500 text-sm line-through">{{ product.compare_at_price | money }}</p>
+              {% endif %}
+            </div>
+            <div class="flex mt-2">
+              <span class="mr-3">Color</span>
+              <button class="border-2 border-gray-300 rounded-full w-6 h-6 focus:outline-none"></button>
+              <button class="border-2 border-gray-300 ml-1 bg-gray-700 rounded-full w-6 h-6 focus:outline-none"></button>
+              <button class="border-2 border-gray-300 ml-1 bg-indigo-500 rounded-full w-6 h-6 focus:outline-none"></button>
+            </div>
+          </div>
+          <div class="px-6 pb-4"> 
+            <button class="bg-white-700 hover:bg-gray-50 text-black font-bold border-x border-y py-2 px-4 rounded-full w-full"
+              onclick="addToCart()">Add to Cart</button>
           </div>
         </div>
       {% endfor %}
     </div>
+    {%- if paginate.pages > 1 -%}
+      {% render 'pagination', paginate: paginate, anchor: '', class: '' %}
+    {%- endif -%}
+    {% endpaginate %}
   </div>
 </div>
 

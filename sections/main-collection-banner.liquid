@@ -1,9 +1,9 @@
 <div class="bg-gray-800 relative">
   <div class="w-full banner-container">
-    <img src="{{ collection.image | img_url: 'master' }}" alt="{{ collection.title }}" class="w-full max-h-[400px] object-cover">
+    <img src="{{ collection.image | img_url: 'master' }}" alt="{{ collection.title }}" class="w-full max-h-[200px] object-cover">
   </div>
   <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-    <h1 class="text-5xl font-bold text-black bg-white p-10">{{ collection.title }}</h1>
+    <h1 class="text-5xl font-bold text-black bg-[rgba(255,255,255,.4)] p-10 h-[200px] flex items-center">{{ collection.title }}</h1>
   </div>
 </div>
 
