@@ -40,8 +40,7 @@ class CollectionFiltersForm extends HTMLElement {
 
   renderPage(searchParams, event, updateURLHash = true) {
     const sections = this.getSections();
-    //document.getElementById('bbb-product-grid').querySelector('.collection').classList.add('loading');
-    document.getElementById('bbb-product-grid').classList.add('loading');
+    document.getElementById('bbb-product-grid-wrapper').querySelector('.collection-main').classList.add('loading');
 
     sections.forEach((section) => {
       const url = `${window.location.pathname}?section_id=${section.section}&${searchParams}`;
@@ -73,12 +72,14 @@ class CollectionFiltersForm extends HTMLElement {
   }
 
   renderProductGrid(html) {
-    console.log(html);
+    //const st = DOMParser().parseFromString(html, 'text/html');
+    //console.log(st);
+    console.log("loading");
     const innerHTML = new DOMParser()
       .parseFromString(html, 'text/html')
-      .getElementById('bbb-product-grid').innerHTML;
+      .getElementById('bbb-product-grid-wrapper').innerHTML;
 
-    document.getElementById('bbb-product-grid').innerHTML = innerHTML;
+    document.getElementById('bbb-product-grid-wrapper').innerHTML = innerHTML;
   }
 
   renderFilters(html, event) {
