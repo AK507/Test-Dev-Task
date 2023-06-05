@@ -16,7 +16,12 @@
                   <summary class="facets__summary">
                     <div class="flex flex-wrap justify-between">
                       <div class="flex">
+                        {% assign filter_label = filter.label | escape | downcase%}
+                        {% if filter_label == "more filters" %}
+                        <span>Tags</span>
+                        {% else %}
                         <span>{{ filter.label | escape }}</span>
+                        {% endif %}
                         <span class="count-bubble">{%- if filter.active_values.size > 0 -%}{{ filter.active_values.size }}{%- endif -%}</span>
                       </div>
                       {% render 'icon-caret' %}
