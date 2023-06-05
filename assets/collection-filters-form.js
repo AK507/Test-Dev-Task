@@ -40,7 +40,8 @@ class CollectionFiltersForm extends HTMLElement {
 
   renderPage(searchParams, event, updateURLHash = true) {
     const sections = this.getSections();
-    document.getElementById('CollectionProductGrid').querySelector('.collection').classList.add('loading');
+    //document.getElementById('bbb-product-grid').querySelector('.collection').classList.add('loading');
+    document.getElementById('bbb-product-grid').classList.add('loading');
 
     sections.forEach((section) => {
       const url = `${window.location.pathname}?section_id=${section.section}&${searchParams}`;
@@ -72,11 +73,12 @@ class CollectionFiltersForm extends HTMLElement {
   }
 
   renderProductGrid(html) {
+    console.log(html);
     const innerHTML = new DOMParser()
       .parseFromString(html, 'text/html')
-      .getElementById('CollectionProductGrid').innerHTML;
+      .getElementById('bbb-product-grid').innerHTML;
 
-    document.getElementById('CollectionProductGrid').innerHTML = innerHTML;
+    document.getElementById('bbb-product-grid').innerHTML = innerHTML;
   }
 
   renderFilters(html, event) {
@@ -93,7 +95,7 @@ class CollectionFiltersForm extends HTMLElement {
     });
 
     this.renderActiveFacets(parsedHTML);
-    this.renderMobileElements(parsedHTML);
+    //this.renderMobileElements(parsedHTML);
 
     if (countsToRender) this.renderCounts(countsToRender, event.target.closest('.js-filter'));
   }
@@ -146,8 +148,8 @@ class CollectionFiltersForm extends HTMLElement {
   getSections() {
     return [
       {
-        id: 'main-collection-product-grid',
-        section: document.getElementById('main-collection-product-grid').dataset.id,
+        id: 'bbb-product-grid',
+        section: document.getElementById('bbb-product-grid').dataset.id,
       }
     ]
   }

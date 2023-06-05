@@ -1,132 +1,175 @@
 <h3 class="text-lg font-semibold mb-4">Filter</h3>
-  <div class="mb-4">
-    {% for filter in collection.filters %}
-      {% case filter.type %}
-        {% when 'list' %}
-      <h3>List</h3>
-      <ul class="facets__list list-unstyled" role="list">
-        {%- for value in filter.values -%}
-          <li class="list-menu__item facets__item">
-            <label for="Filter-{{ filter.label | escape }}-{{ forloop.index }}" class="facet-checkbox{% if value.count == 0 and value.active == false %} facet-checkbox--disabled{% endif %}">
-              <input type="checkbox"
-                name="{{ value.param_name }}"
-                value="{{ value.value }}"
-                id="Filter-{{ filter.label | escape }}-{{ forloop.index }}"
-                {% if value.active %}checked{% endif %}
-                {% if value.count == 0 and value.active == false %}disabled{% endif %}
-              >
+{%- assign total_active_values = 0 -%}
+    <collection-filters-form class="facets small-hide">
+      <form id="CollectionFiltersForm" class="facets__form">
+        {% if section.settings.enable_filtering %}
+          <div class="facets__wrapper">
+            {%- unless collection.filters == empty -%}
+              <p class="facets__heading">{{ 'sections.collection_template.filter_by_label' | t }}</p>
+            {%- endunless -%}
 
-              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <rect width="16" height="16" stroke="currentColor" fill="none" stroke-width="1"></rect>
-              </svg>
+            {%- for filter in collection.filters -%}
+              {%- assign total_active_values = total_active_values | plus: filter.active_values.size -%}
+              {% case filter.type %}
+              {% when 'list' %}
+                <details class="disclosure-has-popup facets__disclosure js-filter" data-index="{{ forloop.index }}">
+                  <summary class="facets__summary">
+                    <div class="flex flex-wrap justify-between">
+                      <div class="flex">
+                        <span>{{ filter.label | escape }}</span>
+                        <span class="count-bubble">{%- if filter.active_values.size > 0 -%}{{ filter.active_values.size }}{%- endif -%}</span>
+                      </div>
+                      {% render 'icon-caret' %}
+                    </div>
+                  </summary>
+                  <div class="facets__display relative hidden">
+                    <div class="facets__header">
+                      <span class="facets__selected no-js-hidden">{{ 'sections.collection_template.filters_selected' | t: count: filter.active_values.size }}</span>
+                      <a href="{{ filter.url_to_remove }}" class="facets__reset link underlined-link js-facet-remove text-[14px]">{{ 'sections.collection_template.reset' | t }}</a>
+                    </div>
 
-              <svg class="icon icon-checkmark" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 9" fill="none" width="10px" height="10px">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.35.643a.5.5 0 01.006.707l-6.77 6.886a.5.5 0 01-.719-.006L.638 4.845a.5.5 0 11.724-.69l2.872 3.011 6.41-6.517a.5.5 0 01.707-.006h-.001z" fill="currentColor"/>
-              </svg>
-              {{ value.label | escape }} ({{ value.count }})
-            </label>
-          </li>
-        {%- endfor -%}
-      </ul>
-      {% when 'price_range'%}
-        <h3>Price</h3>
-        <details class="disclosure-has-popup facets__disclosure js-filter" data-index="{{ forloop.index }}">
-          <summary class="facets__summary">
-            <div>
-              <span>{{ filter.label | escape }}</span>
-              <span class="count-bubble{%- if filter.min_value.value or filter.max_value.value -%}{{ filter.active_values.size }} count-bubble--dot{% endif %}"></span>
-              {% render 'icon-caret' %}
-            </div>
-          </summary>
-          <div class="facets__display">
-            <div class="facets__header">
-              {%- assign max_price_amount = filter.range_max | money | escape -%}
-              <span class="facets__selected">{{ "sections.collection_template.max_price" | t: price: max_price_amount }}</span>
-              <a href="{{ filter.url_to_remove }}" class="facets__reset link underlined-link js-facet-remove" >{{ 'sections.collection_template.reset' | t }}</a>
-            </div>
-            <price-range class="facets__price">
-              <div class="field">
-                <span class="field__currency">{{ cart.currency.symbol }}</span>
-                <input class="field__input"
-                  name="{{ filter.min_value.param_name }}"
-                  id="Filter-{{ filter.label | escape }}-{{ forloop.index }}"
-                  {%- if filter.min_value.value -%}
-                    {%- if uses_comma_decimals -%}
-                      value="{{ filter.min_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
-                    {%- else -%}
-                      value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
-                    {% endif %}
-                  {%- endif -%}
-                  type="number"
-                  placeholder="0"
-                  min="0"
-                  max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
-                </input>
-                <label class="field__label" for="Search-In-Modal">{{ 'sections.collection_template.from' | t }}</label>
+                    <ul class="facets__list list-unstyled" role="list">
+                      {%- for value in filter.values -%}
+                        <li class="list-menu__item facets__item">
+                          <label for="Filter-{{ filter.label | escape }}-{{ forloop.index }}" class="facet-checkbox{% if value.count == 0 and value.active == false %} facet-checkbox--disabled{% endif %}">
+                            <input type="checkbox"
+                              name="{{ value.param_name }}"
+                              value="{{ value.value }}"
+                              id="Filter-{{ filter.label | escape }}-{{ forloop.index }}"
+                              {% if value.active %}checked{% endif %}
+                              {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                            >
+
+                            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                              <rect width="16" height="16" stroke="currentColor" fill="none" stroke-width="1"></rect>
+                            </svg>
+
+                            <svg class="icon icon-checkmark" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 9" fill="none" width="10px" height="10px">
+                              <path fill-rule="evenodd" clip-rule="evenodd" d="M11.35.643a.5.5 0 01.006.707l-6.77 6.886a.5.5 0 01-.719-.006L.638 4.845a.5.5 0 11.724-.69l2.872 3.011 6.41-6.517a.5.5 0 01.707-.006h-.001z" fill="currentColor"/>
+                            </svg>
+                            {{ value.label | escape }} ({{ value.count }})
+                          </label>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                </details>
+              {% when 'price_range' %}
+                {% assign currencies_using_comma_decimals = "ANG,ARS,BRL,BYN,BYR,CLF,CLP,COP,CRC,CZK,DKK,EUR,HRK,HUF,IDR,ISK,MZN,NOK,PLN,RON,RUB,SEK,TRY,UYU,VES,VND" | split: ',' %}
+                {% assign uses_comma_decimals = false %}
+                {% if currencies_using_comma_decimals contains cart.currency.iso_code %}
+                  {% assign uses_comma_decimals = true %}
+                {% endif %}
+
+                <details class="disclosure-has-popup facets__disclosure js-filter" data-index="{{ forloop.index }}">
+                  <summary class="facets__summary">
+                    <div class="flex flex-wrap justify-between">
+                      <div class="flex">
+                        <span>{{ filter.label | escape }}</span>
+                        <span class="count-bubble{%- if filter.min_value.value or filter.max_value.value -%}{{ filter.active_values.size }} count-bubble--dot{% endif %}"></span>
+                      </div>
+                        {% render 'icon-caret' %}
+                    </div>
+                  </summary>
+                  <div class="facets__display relative hidden">
+                    <div class="facets__header">
+                      {%- assign max_price_amount = filter.range_max | money | escape -%}
+                      <span class="facets__selected">{{ "sections.collection_template.max_price" | t: price: max_price_amount }}</span>
+                      <a href="{{ filter.url_to_remove }}" class="facets__reset link underlined-link js-facet-remove text-[14px]">{{ 'sections.collection_template.reset' | t }}</a>
+                    </div>
+                    <price-range class="facets__price">
+                      <div class="field">
+                        <span class="field__currency">{{ cart.currency.symbol }}</span>
+                        <input class="field__input"
+                          name="{{ filter.min_value.param_name }}"
+                          id="Filter-{{ filter.label | escape }}-{{ forloop.index }}"
+                          {%- if filter.min_value.value -%}
+                            {%- if uses_comma_decimals -%}
+                              value="{{ filter.min_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+                            {%- else -%}
+                              value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+                            {% endif %}
+                          {%- endif -%}
+                          type="number"
+                          placeholder="0"
+                          min="0"
+                          max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
+                        </input>
+                        <label class="field__label" for="Search-In-Modal">{{ 'sections.collection_template.from' | t }}</label>
+                      </div>
+                      <div class="field">
+                        <span class="field__currency">{{ cart.currency.symbol }}</span>
+                        <input class="field__input"
+                          name="{{ filter.max_value.param_name }}"
+                          id="Filter-{{ filter.label | escape }}-{{ forloop.index }}"
+                          {%- if filter.max_value.value -%}
+                            {%- if uses_comma_decimals -%}
+                              value="{{ filter.max_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
+                            {%- else -%}
+                              value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+                            {% endif %}
+                          {%- endif -%}
+                          type="number"
+                          placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                          min="0"
+                          max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
+                        </input>
+                        <label class="field__label" for="Search-In-Modal">{{ 'sections.collection_template.to' | t }}</label>
+                      </div>
+                    </div>
+                  </price-range>
+                </details>
+              {% endcase %}
+            {%- endfor -%}
+            <noscript>
+              <button type="submit" class="facets__button button">{{ 'sections.collection_template.filter_button' | t }}</button>
+            </noscript>
+          </div>
+
+          <div class="active-facets active-facets-desktop">
+            <a href="{{ collection.url }}?sort_by={{ sort_by }}" class="active-facets__button button button--secondary js-facet-remove">{{ 'sections.collection_template.clear_all' | t }}</a>
+            {%- for filter in collection.filters -%}
+              {%- for value in filter.active_values -%}
+                <a class="active-facets__button active-facets__button--light button button--tertiary js-facet-remove" href="{{ value.url_to_remove }}">
+                  {{ value.label | escape }}
+                  {% render 'icon-close-small' %}
+                </a>
+              {%- endfor -%}
+              {% if filter.type == "price_range" %}
+                {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+                  <a class="active-facets__button active-facets__button--light button button--tertiary js-facet-remove" href="{{ filter.url_to_remove }}">
+                    {%- if filter.min_value.value -%}{{ filter.min_value.value | money }}{%- else -%}{{ 0 | money }}{%- endif -%}-{%- if filter.max_value.value -%}{{ filter.max_value.value | money }}{%- else -%}{{ filter.range_max | money }}{%- endif -%}
+                    {% render 'icon-close-small' %}
+                  </a>
+                {%- endif -%}
+              {% endif %}
+            {%- endfor -%}
+          </div>
+        {% endif %}
+
+        {% if collection.current_vendor or collection.current_type %}
+          <input type="hidden" name="q" value="{{ collection.current_vendor }}{{ collection.current_type }}">
+        {% endif %}
+
+        {%- if section.settings.enable_sorting -%}
+          <div class="collection-filters__item sorting">
+            <div class="collection-filters__field">
+              <label class="collection-filters__label" for="SortBy">{{ 'sections.collection_template.sort_by_label' | t }}</label>
+              <div class="select">
+                {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+                <select name="sort_by" class="select__select collection-filters__sort" id="SortBy" aria-describedby="a11y-refresh-page-message">
+                  {%- for option in collection.sort_options -%}
+                    <option value="{{ option.value | escape }}"{% if option.value == sort_by %} selected="selected"{% endif %}>{{ option.name | escape }}</option>
+                  {%- endfor -%}
+                </select>
+                {% render 'icon-caret' %}
               </div>
-              <div class="field">
-                <span class="field__currency">{{ cart.currency.symbol }}</span>
-                <input class="field__input"
-                  name="{{ filter.max_value.param_name }}"
-                  id="Filter-{{ filter.label | escape }}-{{ forloop.index }}"
-                  {%- if filter.max_value.value -%}
-                    {%- if uses_comma_decimals -%}
-                      value="{{ filter.max_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}"
-                    {%- else -%}
-                      value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
-                    {% endif %}
-                  {%- endif -%}
-                  type="number"
-                  placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
-                  min="0"
-                  max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
-                </input>
-                <label class="field__label" for="Search-In-Modal">{{ 'sections.collection_template.to' | t }}</label>
-              </div>
             </div>
-          </price-range>
-        </details>
-      {% endcase %}
-    {% endfor %}
-  </div>
-  <div class="mb-4">
-    <span class="block text-sm font-medium text-gray-700 mb-2">Tags:</span>
-    {% for tag in collection.all_tags %}
-      <label class="inline-flex items-center mr-4">
-        <input type="checkbox" class="form-checkbox" name="tags" value="{{ tag | handle }}">
-        <span class="ml-2">{{ tag }}</span>
-      </label>
-    {% endfor %}
-  </div>
-  <div class="mb-4">
-    <span class="block text-sm font-medium text-gray-700 mb-2">Colors:</span>
-    <div class="flex flex-wrap">
-      <label for="color1" class="inline-flex items-center mt-2 mr-4">
-        <input type="checkbox" id="color1" class="form-checkbox h-4 w-4 text-indigo-600 rounded-full">
-        <span class="rounded-full bg-indigo-600 h-8 w-8 mx-2"></span>
-      </label>
-      <label for="color2" class="inline-flex items-center mt-2 mr-4">
-        <input type="checkbox" id="color2" class="form-checkbox h-4 w-4 text-purple-600 rounded-full">
-        <span class="rounded-full bg-purple-600 h-8 w-8 mx-2"></span>
-      </label>
-      <label for="color3" class="inline-flex items-center mt-2 mr-4">
-        <input type="checkbox" id="color3" class="form-checkbox h-4 w-4 text-pink-600 rounded-full">
-        <span class="rounded-full bg-pink-600 h-8 w-8 mx-2"></span>
-      </label>
-      <!-- Add more color swatches as needed -->
-    </div>
-  </div>
-  <div class="mb-4">
-    <span class="block text-sm font-medium text-gray-700 mb-2">Price:</span>
-    <input type="text" id="price-filter" placeholder="Enter price range" class="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
-  <div class="mb-4">
-    <span class="block text-sm font-medium text-gray-700 mb-2">Sort By:</span>
-    <select id="sort-filter" class="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <option value="title-asc">Title (A-Z)</option>
-      <option value="title-desc">Title (Z-A)</option>
-      <option value="price-asc">Price (Low to High)</option>
-      <option value="price-desc">Price (High to Low)</option>
-    </select>
-  </div>
-  <button id="filter-button" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Filter</button>
+
+            <noscript>
+              <button type="submit" class="button button--small">{{ 'sections.collection_template.sort_button' | t }}</button>
+            </noscript>
+          </div>
+        {%- endif -%}
+      </form>
+    </collection-filters-form>
