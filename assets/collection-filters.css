@@ -17,10 +17,12 @@
 .collection-filters__label {
   display: block;
   color: var(--color-base-text-opacity-85-percent);
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   line-height: 1;
   margin: 0 0 1rem;
   width: 100%;
+  text-transform: uppercase;
+  font-weight: 500;
 }
 .collection-filters__summary {
   display: flex;
@@ -69,16 +71,21 @@
       max-width: 100%;
   }
 }
+.collection-filters__item.sorting select {
+  width: 100%;
+}
 .facets {
   display: block;
 }
 .facets__heading {
   display: block;
   color: var(--color-base-text-opacity-85-percent);
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   line-height: 1;
-  margin: 0 0 1rem 0.5rem;
+  margin: 0 0 1rem 0;
   width: 100%;
+  text-transform: uppercase;
+  font-weight: 500;
 }
 .facets__reset {
   margin-left: auto;
@@ -138,7 +145,7 @@
 }
 .facet-checkbox > svg {
   background-color: var(--color-background);
-  margin-right: 1.2rem;
+  margin-right: .5rem;
   flex-shrink: 0;
 }
 .facet-checkbox .icon-checkmark {
@@ -156,7 +163,12 @@
 }
 .facets__price {
   display: flex;
-  padding: 2rem;
+  padding: 0;
+}
+.facets__price >div {
+  display: flex;
+  width: 50%;
+  margin: 0;
 }
 .facets__price > * + * {
   margin-left: 2rem;
@@ -165,7 +177,7 @@
   align-items: center;
 }
 .facets__price .field .field__currency {
-  margin-right: 0.6rem;
+  margin-right: 0.2rem;
 }
 .facets__price .field__label {
   left: 2.1rem;
